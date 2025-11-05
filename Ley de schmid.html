@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de la Ley de Schmid (MetFisTIC)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght=700&display=swap" rel="stylesheet">
+    <style>
+        /* [ESTILOS GLOBALES BASE] */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: linear-gradient(to bottom right, #f0f2f5, #e0e5ec);
+            color: #333;
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .app-container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: #2c3e50;
+            border-bottom: 2px solid #e0e6ed;
+            padding-bottom: 15px;
+            margin-top: 0;
+            margin-bottom: 40px;
+            font-size: 32px;
+            font-weight: 700;
+            text-align: center;
+        }
+        h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #3498db;
+            margin-top: 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e0e6ed;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+        p {
+            margin-bottom: 18px;
+            color: #555;
+        }
+        
+        /* PESTAÑAS PRINCIPALES */
+        .tabs {
+            border-bottom: 2px solid #aed6f1;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .tablink {
+            background-color: transparent;
+            border: none;
+            border-bottom: 4px solid transparent;
+            padding: 18px 30px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: #7f8c8d;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            white-space: nowrap;
+        }
+        .tablink:hover {
+            color: #3498db;
+            background-color: #f8fcfd;
+        }
+        .tablink.active {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            background-color: #f0f4f7;
+        }
+        .tabcontent {
+            display: none;
+            padding: 30px 0;
+            min-height: 600px;
+        }
+        .tabcontent.active {
+            display: block;
+        }
+
+        /* MENÚ DE SUBSECCIONES (TARJETAS) */
+        .subseccion-selector {
+            display: flex;
+            gap: 30px; 
+            margin-bottom: 50px; 
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .selector-card {
+            flex: 1;
+            min-width: 320px;
+            padding: 30px;
+            border: 1px solid #d0dce8;
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #fcfdfe; 
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        .selector-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 12px 35px rgba(52, 152, 219, 0.25);
+            transform: translateY(-5px);
+        }
+        .selector-card.active-sub {
+            background-color: #eaf6ff; 
+            border-color: #3498db;
+            box-shadow: 0 15px 40px rgba(52, 152, 219, 0.35);
+            transform: translateY(-8px);
+        }
+        .selector-card h4 {
+            margin-top: 10px;
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .selector-card p {
+            font-size: 0.98em;
+            color: #6d7f8d;
+            line-height: 1.6;
+        }
+
+        /* ESTILOS DE LA CALCULADORA Y FORMULARIOS */
+        .subseccion {
+            padding: 40px;
+            border: 1px solid #cce0f5;
+            border-radius: 15px;
+            background-color: #f7fbff;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.03);
+        }
+        .form-group {
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px dashed #e0e6ed;
+        }
+        .form-group:last-of-type {
+            border-bottom: none;
+        }
+        .input-field {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .input-field label {
+            flex: 1;
+            min-width: 200px;
+            margin-right: 30px;
+            font-weight: 600;
+            color: #4a5e6f;
+            font-size: 17px; 
+            white-space: nowrap;
+        }
+        .input-field input[type="text"], .unidad-select, select {
+            flex: 2;
+            min-width: 180px;
+            padding: 14px;
+            border: 1px solid #b0c0d0;
+            border-radius: 10px;
+            margin-right: 15px;
+            font-size: 16px;
+            background-color: #fff;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-field input[type="text"]:focus, .unidad-select:focus, select:focus {
+            border-color: #3498db;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08), 0 0 8px rgba(52, 152, 219, 0.4);
+            outline: none;
+        }
+        
+        /* BOTÓN DE CÁLCULO */
+        button {
+            background-color: #27ae60;
+            color: white;
+            padding: 16px 35px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 19px;
+            font-weight: bold;
+            margin-top: 35px;
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.35);
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        button:hover {
+            background-color: #229954;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.45);
+        }
+        
+        /* RESULTADOS */
+        .resultado {
+            margin-top: 45px;
+            padding: 30px;
+            border: 3px solid #3498db; 
+            border-radius: 12px;
+            background-color: #eaf6ff; 
+            font-weight: 600;
+            line-height: 1.9; 
+            color: #2c3e50;
+            font-size: 18px; 
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.25);
+            text-align: center;
+        }
+        .resultado strong {
+            color: #2c3e50; 
+            font-weight: 700;
+        }
+        
+        /* Símbolos y notación (Tipografía académica) */
+        .tau-resuelto {
+            display: inline-block;
+            line-height: 1;
+            font-family: 'Playfair Display', serif;
+        }
+        .tau-resuelto .sym-base {
+            font-size: 1.4em; 
+            font-weight: bold;
+        }
+        .tau-resuelto .sym-sub {
+            font-size: 0.75em;
+            vertical-align: sub;
+            margin-left: 2px;
+            font-weight: normal;
+        }
+        .simbolo-texto {
+             font-family: 'Playfair Display', serif;
+             font-weight: bold;
+             font-size: 1.2em;
+             color: #3498db; 
+        }
+
+        /* Estilo para las fórmulas de teoría */
+        .formula {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 25px 0;
+            line-height: 1.6;
+        }
+        .formula sup, .formula sub {
+            font-size: 0.7em;
+        }
+        .vector-notation {
+            text-decoration: overline;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        .vector-input {
+            padding: 25px;
+            border: 1px dashed #aed6f1;
+            border-radius: 10px;
+            background-color: #f5f8fc;
+            margin-bottom: 25px;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+        .vector-input label {
+            font-weight: 600;
+            color: #4a5e6f;
+            margin-bottom: 12px;
+            display: block;
+            font-size: 17px;
+        }
+        .vector-coords {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .vector-coords input {
+            width: 80px; 
+            text-align: center;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #c0d0e0;
+            border-radius: 8px;
+            background-color: #fff;
+        }
+        .vector-coords input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 6px rgba(52, 152, 219, 0.3);
+            outline: none;
+        }
+
+        /* Enlaces externos */
+        a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        #sigma-external-link {
+            background-color: #fefcf3;
+            border-left: 5px solid #f1c40f;
+            padding: 20px;
+            margin-top: 25px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            color: #7d6b1d;
+        }
+        #sigma-external-link p {
+            margin: 0 0 12px 0;
+            font-weight: 500;
+        }
+        #sigma-external-link a {
+            display: inline-block;
+            background-color: #f1c40f;
+            color: #2c3e50;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 8px rgba(241, 196, 15, 0.3);
+        }
+        #sigma-external-link a:hover {
+            background-color: #d8af0b;
+            transform: translateY(-2px);
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(241, 196, 15, 0.4);
+        }
+
+        /* Mensajes de error */
+        .resultado span[style*="color: red"] {
+            color: #e74c3c !important;
+            font-weight: bold;
+        }
+
+        /* Línea horizontal divisoria general */
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(189, 195, 199, 0.5), rgba(0, 0, 0, 0));
+            margin: 50px 0;
+        }
+
+        /* Pie de página - ¡AZUL CLARITO Y BORDE OSCURO! */
+        .footer-message {
+            margin-top: 50px;
+            padding: 25px 0;
+            text-align: center;
+            font-size: 14px;
+            color: #2c3e50; /* Texto oscuro */
+            background-color: #cfe2f9; /* Azul Clarito */
+            border-radius: 0 0 20px 20px;
+            
+            /* Borde más oscuro */
+            border-top: 4px solid #3498db; /* Azul más oscuro para el borde superior */
+            
+            margin-left: -50px;
+            margin-right: -50px;
+            padding-left: 50px;
+            padding-right: 50px;
+            box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.05); /* Sombra interna sutil */
+        }
+        .footer-message p {
+            margin: 5px 0;
+            color: #2c3e50; /* Asegurar color de texto oscuro */
+        }
+        .footer-message strong {
+            color: #2c3e50; /* Texto fuerte oscuro */
+        }
+
+        /* Estilo para imágenes */
+        .theory-image {
+            max-width: 100%;
+            height: auto;
+            display: block; /* Para centrar y evitar espacio extra */
+            margin: 30px auto; /* Centrar imagen y darle espacio */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .image-caption {
+            text-align: center;
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            margin-bottom: 30px;
+        }
+        .resource-list {
+            list-style: none;
+            padding: 0;
+        }
+        .resource-list li {
+            margin-bottom: 15px;
+            border-left: 5px solid #27ae60;
+            padding-left: 15px;
+            background-color: #f7fffb;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        .resource-list a {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="tabs">
+            <button class="tablink active" onclick="openTab(event, 'Calculadora')">1. 🧮 Calculadora Ley de Schmid</button>
+            <button class="tablink" onclick="openTab(event, 'Teoria')">2. 📚 Teoría</button>
+            <button class="tablink" onclick="openTab(event, 'Manual')">3. 📜 Manual de Uso</button>
+        </div>
+
+        <div id="Calculadora" class="tabcontent active">
+            <h2>Herramienta de Cálculo y Análisis de Schmid</h2>
+
+            <div class="seccion-calculadora">
+                
+                <div class="subseccion-selector">
+                    <div id="card-directa" class="selector-card active-sub" onclick="showSubseccion('directa', this)">
+                        <h4>Método 1: Ángulos Directos (λ, θ)</h4> 
+                        <p>Cálculo rápido usando la fórmula del Esfuerzo Cortante Resuelto (τ<sub>resuelto</sub>).</p>
+                    </div>
+                    <div id="card-vectorial" class="selector-card" onclick="showSubseccion('vectorial', this)">
+                        <h4>Método 2: Planos de Deslizamiento (Valores Cristalográficos)</h4>
+                        <p>Calcula λ y θ a partir de la cristalográfica de los planos y direcciones.</p>
+                    </div>
+                </div>
+
+                <div id="subseccion-directa" class="subseccion" style="display: block;">
+                    <h3>Subsección 1: Despeje de la Ley de Schmid</h3>
+                    <p>Utilice esta sección para despejar cualquiera de las cuatro variables: τ, σ, λ o θ.</p>
+                    
+                    <div class="form-group">
+                        <label for="incognita-s1">Selecciona la Incógnita:</label>
+                        <select id="incognita-s1" onchange="toggleInputs(1)">
+                            <option value="tau" selected>Esfuerzo Cortante Resuelto (τ)</option>
+                            <option value="sigma">Esfuerzo Aplicado (σ)</option>
+                            <option value="lambda">Ángulo Lambda (λ)</option>
+                            <option value="theta">Ángulo Theta (θ)</option>
+                        </select>
+                        <label for="unidades-incognita-s1" id="label-unidades-s1" style="display: block;">Unidades de la Incógnita:</label>
+                        <select id="unidades-incognita-s1" class="unidad-select" style="display: block;">
+                            <option value="MPa" selected>Megapascales (MPa)</option>
+                            <option value="Pa">Pascal (Pa)</option>
+                            <option value="KPa">Kilopascales (Kpa)</option>
+                            <option value="GPa">Gigapascales (GPa)</option>
+                            <option value="psi">Libra por pulgada cuadrada (psi)</option>
+                            <option value="ksi">Kilo libra por pulgada cuadrada (ksi)</option>
+                        </select>
+                    </div>
+
+                    <div id="inputs-s1">
+                        
+                        <div class="form-group" data-variable="sigma" id="sigma-full-group">
+                            <label for="sigma-s1-source" style="border-bottom: none; padding-bottom: 0;">Fuente del Esfuerzo Aplicado (σ):</label>
+                            <select id="sigma-s1-source" onchange="updateSigmaInputUI(this.value)">
+                                <option value="directo" selected>1. Valor Directo (Ingresar Manualmente)</option>
+                                <option value="calculadora">2. Calcular con Calculadora Externa</option>
+                            </select>
+                            
+                            <div id="sigma-external-link" style="display: none;">
+                                <p><strong>Instrucción:</strong> Calcule el esfuerzo σ usando la herramienta externa y luego ingrese el resultado numérico en el campo de abajo.</p>
+                                <a href="https://metfistic2025.github.io/Calculadora_METfisTIC_de_Esfuerzos_Maximos/" target="_blank">
+                                    Abrir Calculadora de Esfuerzos Máximos 🔗
+                                </a>
+                            </div>
+
+                            <div class="input-field" style="margin-top: 25px; margin-bottom: 5px; border-bottom: none;">
+                                <label for="sigma-s1">Valor de Esfuerzo Aplicado (σ):</label>
+                                <input type="text" id="sigma-s1" placeholder="Ingrese valor directo o resultado del cálculo">
+                                <select id="unidad-sigma-s1" class="unidad-select">
+                                    <option value="MPa" selected>MPa</option>
+                                    <option value="Pa">Pa</option>
+                                    <option value="KPa">KPa</option>
+                                    <option value="GPa">GPa</option>
+                                    <option value="psi">psi</option>
+                                    <option value="ksi">ksi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-field" data-variable="lambda">
+                            <label for="lambda-s1">Valor de Ángulo Lambda (λ) en grados (°):</label>
+                            <input type="text" id="lambda-s1" placeholder="Ej: 30 o 30,5">
+                        </div>
+                        <div class="input-field" data-variable="theta">
+                            <label for="theta-s1">Valor de Ángulo Theta (θ) en grados (°):</label>
+                            <input type="text" id="theta-s1" placeholder="Ej: 45 o 45,5">
+                        </div>
+                        <div class="input-field" data-variable="tau-resuelto" style="display: none;">
+                            <label for="tau-resuelto-s1">Valor de Esfuerzo Cortante Resuelto (τ):</label>
+                            <input type="text" id="tau-resuelto-s1" placeholder="Ej: 50 o 5e1">
+                            <select id="unidad-tau-s1" class="unidad-select">
+                                <option value="MPa" selected>MPa</option>
+                                <option value="Pa">Pa</option>
+                                <option value="KPa">KPa</option>
+                                <option value="GPa">GPa</option>
+                                <option value="psi">psi</option>
+                                <option value="ksi">ksi</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="calcularSubseccion1()">Calcular Resultado</button>
+                    <div class="resultado" id="resultado-s1"></div>
+                </div>
+
+                <div id="subseccion-vectorial" class="subseccion" style="display: none;">
+                    <h3>Subsección 2: Cálculo de τ<sub>resuelto</sub> por Vectores</h3>
+                    <p>Utilice coordenadas cristalográficas [h k l], [u v w] y [U V W] para determinar los ángulos y el esfuerzo cortante resuelto.</p>
+                    
+                    <div class="form-group">
+                        <label for="tau-unidades-s2">Unidades para τ<sub>resuelto</sub>:</label>
+                        <select id="tau-unidades-s2" class="unidad-select">
+                            <option value="MPa" selected>Megapascales (MPa)</option>
+                            <option value="Pa">Pascal (Pa)</option>
+                            <option value="KPa">Kilopascales (Kpa)</option>
+                            <option value="GPa">Gigapascales (GPa)</option>
+                            <option value="psi">Libra por pulgada cuadrada (psi)</option>
+                            <option value="ksi">Kilo libra por pulgada cuadrada (ksi)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-field form-group" style="border-bottom: none;">
+                        <label for="sigma-s2">Valor de Esfuerzo Aplicado (σ):</label>
+                        <input type="text" id="sigma-s2" placeholder="Ej: 100">
+                        <select id="unidad-sigma-s2" class="unidad-select">
+                            <option value="MPa" selected>MPa</option>
+                            <option value="Pa">Pa</option>
+                            <option value="KPa">KPa</option>
+                            <option value="GPa">GPa</option>
+                            <option value="psi">psi</option>
+                            <option value="ksi">ksi</option>
+                        </select>
+                    </div>
+
+                    <div class="vector-input">
+                        <label>Plano de Deslizamiento [h k l] (vector normal <span class="vector-notation">n</span>):</label>
+                        <div class="vector-coords">
+                            <input type="text" id="n-x" placeholder="h" size="3">
+                            <input type="text" id="n-y" placeholder="k" size="3">
+                            <input type="text" id="n-z" placeholder="l" size="3">
+                        </div>
+                    </div>
+                    
+                    <div class="vector-input">
+                        <label>Dirección de Deslizamiento [u v w] (vector Burgers <span class="vector-notation">b</span>):</label>
+                        <div class="vector-coords">
+                            <input type="text" id="b-x" placeholder="u" size="3">
+                            <input type="text" id="b-y" placeholder="v" size="3">
+                            <input type="text" id="b-z" placeholder="w" size="3">
+                        </div>
+                    </div>
+
+                    <div class="vector-input">
+                        <label>Dirección de la Fuerza Aplicada [U V W] (vector <span class="vector-notation">F</span>):</label>
+                        <div class="vector-coords">
+                            <input type="text" id="F-x" placeholder="U" size="3">
+                            <input type="text" id="F-y" placeholder="V" size="3">
+                            <input type="text" id="F-z" placeholder="W" size="3">
+                        </div>
+                    </div>
+
+                    <button onclick="calcularSubseccion2()">Calcular τ<sub>resuelto</sub></button>
+                    <div class="resultado" id="resultado-s2"></div>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+
+        <div id="Teoria" class="tabcontent">
+            <h2>📚 Teoría: La Ley de Schmid en Metalurgia</h2>
+            <p>La Ley de Schmid es fundamental para comprender la deformación plástica de los materiales cristalinos, especialmente los metales. Describe la relación entre el esfuerzo de corte aplicado (σ) y el esfuerzo cortante resuelto (τ<sub>resuelto</sub>) necesario para iniciar el deslizamiento en un plano cristalográfico específico.</p>
+
+            <h3>La Ley y su Geometría</h3>
+            <p>La deformación plástica en metales ocurre principalmente por el movimiento de dislocaciones a través de la red cristalina. Este movimiento se da en sistemas de deslizamiento específicos, definidos por un plano de deslizamiento y una dirección de deslizamiento (la dirección del vector de Burgers, <span class="vector-notation">b</span>).</p>
+            
+            <p>La Ley de Schmid se expresa matemáticamente como:</p>
+            <p class="formula">
+                τ<sub>resuelto</sub> = σ ⋅ cos(λ) ⋅ cos(θ)
+            </p>
+            <ul>
+                <li>τ<sub>resuelto</sub>: Esfuerzo cortante resuelto (ECR). La componente efectiva del esfuerzo que actúa en el plano y dirección de deslizamiento.</li>
+                <li>σ: Esfuerzo uniaxial aplicado. La tensión o compresión externa aplicada.</li>
+                <li>λ: Ángulo entre la dirección de deslizamiento (<span class="vector-notation">b</span>) y el eje de la fuerza aplicada (<span class="vector-notation">F</span>).</li>
+                <li>θ: Ángulo entre el vector normal al plano de deslizamiento (<span class="vector-notation">n</span>) y el eje de la fuerza aplicada (<span class="vector-notation">F</span>).</li>
+            </ul>
+            <p>El término cos(λ) ⋅ cos(θ) se conoce como el Factor de Schmid (m). El deslizamiento ocurre en el sistema donde el ECR (τ<sub>resuelto</sub>) alcanza el Esfuerzo Cortante Crítico Resuelto (τ<sub>crítico</sub>).</p>
+
+            <h3 style="margin-top: 40px;">Ilustración de la Geometría Vectorial</h3>
+            <p>La siguiente figura ilustra detalladamente la proyección geométrica de la fuerza aplicada (<span class="vector-notation">F</span>) sobre el plano de deslizamiento, mostrando cómo se definen los ángulos λ y θ y cómo se relacionan con los vectores cristalográficos (<span class="vector-notation">n</span>) y (<span class="vector-notation">b</span>):</p>
+            
+            <img src="https://www.researchgate.net/publication/350792959/figure/fig51/AS:1011318198910976@1618128456141/Figure-C2-Illustration-de-la-geometrie-et-de-la-loi-de-Schmid-avec-une-proyeccion-de.png" alt="Ilustración de la geometría y la ley de Schmid con una proyección de los vectores" class="theory-image">
+            <p class="image-caption">Figura 1: Representación de la Ley de Schmid y sus componentes. Se observa la Fuerza Aplicada (<span class="vector-notation">F</span>), el vector normal al plano de deslizamiento (<span class="vector-notation">n</span>), la dirección de deslizamiento o vector de Burgers (<span class="vector-notation">b</span>), y los ángulos  λ  (entre <span class="vector-notation">F</span> y <span class="vector-notation">b</span>) y θ (entre <span class="vector-notation">F</span> y <span class="vector-notation">n</span>).</p>
+
+            <p><strong>Análisis de la Figura 1:</strong></p>
+            <ul>
+                <li>Vector <span class="vector-notation">F</span> (Fuerza Aplicada): Representa el eje de tensión o compresión que genera el esfuerzo (σ).</li>
+                <li>Vector <span class="vector-notation">n</span> (Normal al Plano): Es el vector perpendicular al plano de deslizamiento. El ángulo θ es clave, ya que cos(θ) define la componente de <span class="vector-notation">F</span> normal al plano.</li>
+                <li>Vector <span class="vector-notation">b</span> (Dirección de Deslizamiento): Coincide con el vector de Burgers, que indica la dirección en la que se mueven las dislocaciones. El ángulo λ es crucial, ya que cos(λ) define la componente cortante de <span class="vector-notation">F</span> proyectada sobre la dirección de deslizamiento.</li>
+                <li>Esfuerzo Cortante Resuelto (τ<sub>resuelto</sub>): Es la máxima componente de corte, resultante de la doble proyección de <span class="vector-notation">F</span> (una vez sobre el plano y otra sobre la dirección de deslizamiento).</li>
+            </ul>
+
+            <h3 style="margin-top: 40px;">¿Qué pasa si (τ<sub>resuelto</sub>) es Negativo? (La Ley del Empuje)</h3>
+            <p>Cuando el cálculo del Esfuerzo Cortante Resuelto (τ<sub>resuelto</sub>) resulta ser un número negativo, no significa que la fuerza de corte sea "mala" o que no exista. Simplemente nos da una información crucial sobre la dirección del movimiento:</p>
+
+            <blockquote style="background-color: #ffeaea; border-left: 5px solid #e74c3c; color: #555;">
+                <p style="font-weight: bold; color: #c0392b;">Analogía para Entender el Signo Negativo (Como un Carrito)</p>
+                <p>Imagine que usted define una dirección de deslizamiento como hacia la derecha (la dirección (<span class="vector-notation">b</span>)).</p>
+                <p>1. Si (τ<sub>resuelto</sub>) es <strong>POSITIVO</strong> (+): La fuerza aplicada σ está empujando el cristal hacia la derecha, tal como lo definió. ¡La dislocación se mueve en la dirección (<span class="vector-notation">b</span>).</p>
+                <p>2. Si (τ<sub>resuelto</sub>) es <strong>NEGATIVO</strong> (-): La fuerza aplicada σ está empujando el cristal hacia la izquierda, es decir, en la dirección opuesta a la que usted definió. ¡La dislocación se mueve en la dirección opuesta, (<span class="vector-notation">b</span>) (anti-dirección de deslizamiento)!</p>
+            </blockquote>
+
+            <p><strong>Lo más importante:</strong> Para saber si el material se deformará, solo nos importa la fuerza del empuje, no su sentido. Por eso, el criterio de fluencia (el inicio del deslizamiento) siempre utiliza el valor absoluto del esfuerzo:</p>
+            <p class="formula">
+                <span class="tau-resuelto"><span class="sym-base">|τ<sub>resuelto</sub>|
+            </p>
+            <p>Donde (τ<sub>resuelto</sub>) es la resistencia mínima intrínseca que debe vencer el material para que las dislocaciones comiencen a moverse.</p>
+
+
+            <h3 style="margin-top: 40px;">Probetas y Planos de Deslizamiento</h3>
+            <p>El deslizamiento ocurre en planos y direcciones específicos. A continuación se muestran ejemplos visuales de cómo se manifiestan estos planos en una probeta sometida a tensión, causando un corte inclinado que maximiza el esfuerzo cortante resuelto.</p>
+
+            <div style="display: flex; justify-content: space-around; gap: 20px; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px;">
+                    <img src="https://i.ytimg.com/vi/OeR5ULa60_U/maxresdefault.jpg" alt="Esquema de probeta y plano de deslizamiento" class="theory-image">
+                    <p class="image-caption">Figura 2: Esquema de una probeta en barra donde se indica el plano de deslizamiento (el corte inclinado) causado por el Esfuerzo Cortante Resuelto, el cual es el sistema con el mayor Factor de Schmid.</p>
+                </div>
+                <div style="flex: 1; min-width: 300px;">
+                    <img src="https://1.bp.blogspot.com/-JgX3lpXluZg/XIG6zB4v8GI/AAAAAAAAAOI/C8432mj1c7c1onWG-ZnYpyAVEF6sQDgZACLcBGAs/s320/descarga.jpg" alt="Foto de probeta real con corte" class="theory-image">
+                    <p class="image-caption">Figura 3: Fotografía de una probeta real que muestra la manifestación física del corte (o superficie de falla) que ocurre por deslizamiento en un plano inclinado, resultado de la Ley de Schmid.</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 40px;">Recursos de Apoyo</h3>
+            <p>Estos videos son excelentes complementos para comprender mejor la Ley de Schmid y el manejo de los índices cristalográficos:</p>
+            <ul class="resource-list">
+                <li>
+                    <strong>Explicación de la Ley de Schmid:</strong>
+                    <a href="https://www.youtube.com/watch?v=sCNCj4KWMdk" target="_blank">Ver Video sobre la Ley de Schmid 🔗</a>
+                </li>
+                <li>
+                    <strong>Playlist sobre Índices de Miller y Direcciones:</strong>
+                    <a href="https://youtu.be/-GCk8C3OHck?si=aSiIFoFNOiQmZY-D" target="_blank">Ver Playlist de Índices de Miller (Direcciones y Planos) 🔗</a>
+                </li>
+            </ul>
+
+            <h3 style="margin-top: 40px;">Relaciones Vectoriales para los Cosenos</h3>
+            <p>El Método 2 de esta calculadora utiliza el producto escalar (o producto punto) para obtener los cosenos de los ángulos λ y θ a partir de los vectores cristalográficos:</p>
+
+            <p class="formula">
+                cos(λ) = (<span class="vector-notation">F</span> ⋅ <span class="vector-notation">b</span>) / (|<span class="vector-notation">F</span>| ⋅ |<span class="vector-notation">b</span>|)
+            </p>
+            <p class="formula">
+                cos(θ) = (<span class="vector-notation">n</span> ⋅ <span class="vector-notation">F</span>) / (|<span class="vector-notation">n</span>| ⋅ |<span class="vector-notation">F</span>|)
+            </p>
+            
+            <p style="margin-top: 30px;">Recuerde que estos ángulos siempre se miden respecto a la Fuerza Aplicada (<span class="vector-notation">F</span>).</p>
+            <ul>
+                <li>El ángulo entre la Dirección de Deslizamiento (<span class="vector-notation">b</span>) y la Normal al Plano (<span class="vector-notation">n</span>) no se utiliza directamente en la fórmula de  (τ<sub>resuelto</sub>).</li>
+            </ul>
+
+        </div>
+        
+        <div id="Manual" class="tabcontent">
+            <h2>📜 Manual de Uso</h2>
+            
+            <h3>1. Método 1: Ángulos Directos (λ, θ)</h3>
+            <p>Esta sección permite despejar la incógnita que falte en la Ley de Schmid.</p>
+            <ol>
+                <li><strong>Seleccione la Incógnita:</strong> Elija cuál de las cuatro variables ( τ, σ, λ, θ) desea calcular.</li>
+                <li><strong>Ingrese los Valores Conocidos:</strong> Rellene los campos restantes (que no sean la incógnita).</li>
+                <li><strong>Gestión de σ:</strong> Puede ingresar el valor de σ directamente o usar el enlace a la Calculadora Externa, la cúal hace parte de los simuladores de METFisTIC para obtener σ (luego debe ingresar el resultado numérico).</li>
+                <li><strong>Unidades:</strong> Asegúrese de que las unidades de esfuerzo (MPa, GPa, etc.) estén seleccionadas correctamente, tanto para la entrada como para la incógnita.</li>
+            </ol>
+            
+            <hr>
+            
+            <h3>2. Método 2: Planos de Deslizamiento (Valores Cristalográficos)</h3>
+            <p>Este método calcula los ángulos  λ y θ a partir de los índices cristalográficos y, por lo tanto, calcula τ<sub>resuelto</sub>.</p>
+            <ol>
+                <li><strong>Esfuerzo Aplicado (σ):</strong> Ingrese el valor de σ y sus unidades.</li>
+                <li><strong>Vector Normal (<span class="vector-notation">n</span>):</strong> Ingrese las coordenadas del Plano de Deslizamiento [h k l].</li>
+                <li><strong>Vector Burgers (<span class="vector-notation">b</span>):</strong> Ingrese las coordenadas de la Dirección de Deslizamiento [u v w].</li>
+                <li><strong>Vector Fuerza Aplicada (<span class="vector-notation">F</span>):</strong> Ingrese las coordenadas de la Dirección de Tensión o Fuerza Aplicada [U V W].</li>
+                <li><strong>Calcular:</strong> El resultado mostrará λ y θ calculados por producto escalar, el Factor de Schmid y τ<sub>resuelto</sub> final en las unidades seleccionadas.</li>
+            </ol>
+        </div>
+
+
+        <div class="footer-message">
+            <p>
+                <strong>¡Esta calculadora forma parte del proyecto MetFisTIC "Módulo TIC de Autoestudio que incorpora Simulaciones e IA para Aprendizaje de Conceptos Fundamentales sobre Metalurgia Física", dirigido por los profesores Pedro Delvasto y Walter Pardavé. MetFisTIC fue financiado por la Vicerrectoría Académica de la Universidad Industrial de Santander (2025). ¡La calculadora fue elaborada por Andrés Felipe Caro Miranda y revisada por Alisson Vanessa Guerrero Salcedo!.</strong> 
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // ----------------------------------------------------------------------
+        // --- LÓGICA DE UNIDADES Y CONVERSIONES ---
+        // ----------------------------------------------------------------------
+
+        // Conversiones a MPa (Base de cálculo)
+        const UNIT_CONVERSION_TO_MPA = {
+            'Pa': 1e-6, 'KPa': 1e-3, 'MPa': 1, 'GPa': 1000, 
+            'psi': 0.00689476, 'ksi': 6.89476
+        };
+
+        /**
+         * Convierte un valor de esfuerzo de una unidad de origen a MPa.
+         */
+        function toMPa(value, unit) {
+            if (isNaN(value) || !UNIT_CONVERSION_TO_MPA[unit]) return NaN;
+            return value * UNIT_CONVERSION_TO_MPA[unit];
+        }
+
+        /**
+         * Convierte un valor de MPa a una unidad de destino.
+         */
+        function fromMPa(value, unit) {
+            if (isNaN(value) || !UNIT_CONVERSION_TO_MPA[unit]) return NaN;
+            return value / UNIT_CONVERSION_TO_MPA[unit];
+        }
+
+        /**
+         * Función que lee un valor de un input, maneja la notación científica
+         * y permite tanto ',' como '.' como separador decimal para la entrada.
+         */
+        function getNumericValue(elementId) {
+            // Reemplaza la coma por punto para que parseFloat funcione correctamente
+            const input = document.getElementById(elementId).value.trim().replace(',', '.'); 
+            return parseFloat(input);
+        }
+
+        /**
+         * Función para formatear el número para la salida, usando coma como decimal (locale es-ES).
+         */
+        function formatNumber(num, fixed=4) {
+            if (isNaN(num)) return 'Error';
+            // Usa toLocaleString para el formato con coma decimal
+            return num.toLocaleString('es-ES', { maximumFractionDigits: fixed, minimumFractionDigits: 0 });
+        }
+
+
+        // ----------------------------------------------------------------------
+        // --- LÓGICA DE PESTAÑAS Y SUBSECCIONES ---
+        // ----------------------------------------------------------------------
+
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) tabcontent[i].classList.remove("active");
+            
+            tablinks = document.getElementsByClassName("tablink");
+            for (i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
+            
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+
+            if (tabName === 'Calculadora') {
+                 showSubseccion('directa', document.getElementById('card-directa'));
+            }
+        }
+
+        function showSubseccion(subseccionName, cardElement) {
+            document.getElementById('subseccion-directa').style.display = 'none';
+            document.getElementById('subseccion-vectorial').style.display = 'none';
+
+            document.getElementById('card-directa').classList.remove('active-sub');
+            document.getElementById('card-vectorial').classList.remove('active-sub');
+
+            document.getElementById(`subseccion-${subseccionName}`).style.display = 'block';
+            
+            if (cardElement) {
+                cardElement.classList.add('active-sub');
+            }
+
+            if (subseccionName === 'directa') {
+                 toggleInputs(1);
+                 updateSigmaInputUI(document.getElementById('sigma-s1-source').value); 
+            }
+            // Limpiar resultados al cambiar de subsección
+            document.getElementById('resultado-s1').innerHTML = '';
+            document.getElementById('resultado-s2').innerHTML = '';
+        }
+
+        // Inicializar la primera pestaña activa y la Subsección 1
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('Calculadora').classList.add("active");
+            document.getElementsByClassName('tablink')[0].classList.add("active");
+            showSubseccion('directa', document.getElementById('card-directa'));
+        });
+
+        // ----------------------------------------------------------------------
+        // --- LÓGICA DE SUBSECCIÓN 1 (Cálculos con Ángulos Directos) ---
+        // ----------------------------------------------------------------------
+
+        function updateSigmaInputUI(source) {
+            const linkDiv = document.getElementById('sigma-external-link');
+            if (source === 'calculadora') {
+                linkDiv.style.display = 'block';
+            } else {
+                linkDiv.style.display = 'none';
+            }
+        }
+
+        function toggleInputs(subseccion) {
+            if (subseccion !== 1) return;
+            
+            const incognita = document.getElementById(`incognita-s${subseccion}`).value;
+            
+            // Mostrar todos los campos primero
+            document.getElementById('sigma-full-group').style.display = 'block';
+            document.querySelector(`[data-variable="lambda"]`).style.display = 'flex';
+            document.querySelector(`[data-variable="theta"]`).style.display = 'flex';
+            document.querySelector(`[data-variable="tau-resuelto"]`).style.display = 'flex';
+
+            document.getElementById('label-unidades-s1').style.display = 'block';
+            document.getElementById('unidades-incognita-s1').style.display = 'block';
+
+            // Ocultar el campo que es la incógnita
+            if (incognita === 'tau') {
+                document.querySelector(`[data-variable="tau-resuelto"]`).style.display = 'none';
+                updateSigmaInputUI(document.getElementById('sigma-s1-source').value); // Mantener UI de sigma
+            } else if (incognita === 'sigma') {
+                document.getElementById('sigma-full-group').style.display = 'none'; // Ocultar el grupo completo de Sigma
+            } else if (incognita === 'lambda' || incognita === 'theta') {
+                if (incognita === 'lambda') document.querySelector(`[data-variable="lambda"]`).style.display = 'none';
+                if (incognita === 'theta') document.querySelector(`[data-variable="theta"]`).style.display = 'none';
+                
+                document.getElementById('label-unidades-s1').style.display = 'none'; 
+                document.getElementById('unidades-incognita-s1').style.display = 'none';
+                updateSigmaInputUI('directo'); // Ocultar UI de sigma externa si la incógnita no es σ
+            }
+            document.getElementById('resultado-s1').innerHTML = '';
+        }
+
+        function calcularSubseccion1() {
+            const incognita = document.getElementById('incognita-s1').value;
+            const resultadoDiv = document.getElementById('resultado-s1');
+            resultadoDiv.innerHTML = '';
+
+            try {
+                let tauValue, sigmaValue, lambdaDeg, thetaDeg;
+                let result;
+                let resultUnit = document.getElementById('unidades-incognita-s1').value;
+
+                // 1. Obtener y convertir los valores conocidos a MPa
+                if (incognita !== 'sigma') {
+                    sigmaValue = getNumericValue('sigma-s1');
+                    const sigmaUnit = document.getElementById('unidad-sigma-s1').value;
+                    sigmaValue = toMPa(sigmaValue, sigmaUnit);
+                }
+                if (incognita !== 'tau') {
+                    tauValue = getNumericValue('tau-resuelto-s1');
+                    const tauUnit = document.getElementById('unidad-tau-s1').value;
+                    tauValue = toMPa(tauValue, tauUnit);
+                }
+                if (incognita !== 'lambda') {
+                    lambdaDeg = getNumericValue('lambda-s1');
+                }
+                if (incognita !== 'theta') {
+                    thetaDeg = getNumericValue('theta-s1');
+                }
+                
+                // Validaciones de entrada
+                if (isNaN(sigmaValue) && incognita !== 'sigma') throw new Error("Valor de Esfuerzo Aplicado (σ) inválido o no ingresado. Verifique la fuente de σ.");
+                if (isNaN(tauValue) && incognita !== 'tau') throw new Error("Valor de Esfuerzo Cortante Resuelto (τ) inválido.");
+                if (isNaN(lambdaDeg) && incognita !== 'lambda') throw new Error("Valor de Ángulo Lambda (λ) inválido.");
+                if (isNaN(thetaDeg) && incognita !== 'theta') throw new Error("Valor de Ángulo Theta (θ) inválido.");
+
+                if ((incognita !== 'lambda' && (lambdaDeg < 0 || lambdaDeg > 180)) || (incognita !== 'theta' && (thetaDeg < 0 || thetaDeg > 180))) {
+                    throw new Error("Los ángulos λ y θ deben estar entre 0 y 180 grados.");
+                }
+
+                
+                // 2. Convertir ángulos a radianes
+                const lambdaRad = lambdaDeg * (Math.PI / 180);
+                const thetaRad = thetaDeg * (Math.PI / 180);
+
+                // 3. Aplicar la Ley de Schmid o despejes
+                if (incognita === 'tau') {
+                    result = sigmaValue * Math.cos(lambdaRad) * Math.cos(thetaRad);
+                    result = fromMPa(result, resultUnit);
+                    
+                    resultadoDiv.innerHTML = `<strong>Incógnita (τ - Esfuerzo Cortante Resuelto):</strong> ${formatNumber(result)} ${resultUnit}`;
+                } else if (incognita === 'sigma') {
+                    const factorSchmid = Math.cos(lambdaRad) * Math.cos(thetaRad);
+                    if (Math.abs(factorSchmid) < 1e-9) throw new Error("Factor de Schmid es cero, el despeje de σ es indefinido. (cos(λ) ⋅ cos(θ) ≈ 0)");
+                    
+                    result = tauValue / factorSchmid;
+                    result = fromMPa(result, resultUnit);
+
+                    resultadoDiv.innerHTML = `<strong>Incógnita (σ - Esfuerzo Aplicado):</strong> ${formatNumber(result)} ${resultUnit}`;
+                } else if (incognita === 'lambda') {
+                    const factorSchmidSinLambda = sigmaValue * Math.cos(thetaRad);
+                    if (Math.abs(factorSchmidSinLambda) < 1e-9) throw new Error("Denominador (σ ⋅ cos(θ)) es cero, el despeje de λ es indefinido. (σ ⋅ cos(θ) ≈ 0)");
+
+                    const cosLambda = tauValue / factorSchmidSinLambda;
+                    if (Math.abs(cosLambda) > 1.00000001) throw new Error("Valor de cos(λ) fuera del rango [-1, 1]. Verifique sus datos.");
+
+                    result = Math.acos(Math.min(1, Math.max(-1, cosLambda))) * (180 / Math.PI); 
+                    resultadoDiv.innerHTML = `<strong>Incógnita (λ - Ángulo Lambda):</strong> ${formatNumber(result)} °`;
+                } else if (incognita === 'theta') {
+                    const factorSchmidSinTheta = sigmaValue * Math.cos(lambdaRad);
+                    if (Math.abs(factorSchmidSinTheta) < 1e-9) throw new Error("Denominador (σ ⋅ cos(λ)) es cero, el despeje de θ es indefinido. (σ ⋅ cos(λ) ≈ 0)");
+
+                    const cosTheta = tauValue / factorSchmidSinTheta;
+                    if (Math.abs(cosTheta) > 1.00000001) throw new Error("Valor de cos(θ) fuera del rango [-1, 1]. Verifique sus datos.");
+                    
+                    result = Math.acos(Math.min(1, Math.max(-1, cosTheta))) * (180 / Math.PI);
+                    resultadoDiv.innerHTML = `<strong>Incógnita (θ - Ángulo Theta):</strong> ${formatNumber(result)} °`;
+                }
+
+            } catch (error) {
+                resultadoDiv.innerHTML = `<span style="color: red;">Error en el cálculo: ${error.message}</span>`;
+            }
+        }
+
+
+        // ----------------------------------------------------------------------
+        // --- LÓGICA DE SUBSECCIÓN 2 (Cálculos con Vectores - MEJORADA) ---
+        // ----------------------------------------------------------------------
+
+        function getCoordinates(prefix) {
+            const x = getNumericValue(`${prefix}-x`);
+            const y = getNumericValue(`${prefix}-y`);
+            const z = getNumericValue(`${prefix}-z`);
+
+            // Validación de números
+            if (isNaN(x) || isNaN(y) || isNaN(z)) {
+                throw new Error(`Coordenada(s) inválida(s) para la terna ${prefix.toUpperCase()}.`);
+            }
+            return [x, y, z];
+        }
+
+        function calculateSquareSum(v) {
+            // Calcula la suma de cuadrados (x^2 + y^2 + z^2)
+            return Math.pow(v[0], 2) + Math.pow(v[1], 2) + Math.pow(v[2], 2);
+        }
+        
+        function calculateDotProduct(v1, v2) {
+            // Implementa AxBx + AyBy + AzBz (Producto Escalar)
+            return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+        }
+
+        function calcularSubseccion2() {
+            const resultadoDiv = document.getElementById('resultado-s2');
+            resultadoDiv.innerHTML = '';
+
+            try {
+                // 1. Obtener y convertir Sigma
+                let sigmaValue = getNumericValue('sigma-s2');
+                const sigmaUnit = document.getElementById('unidad-sigma-s2').value;
+                sigmaValue = toMPa(sigmaValue, sigmaUnit);
+
+                if (isNaN(sigmaValue)) throw new Error("Valor de σ (Esfuerzo Aplicado) inválido o no ingresado.");
+
+                // 2. Obtener Unidades de Tau
+                const tauResultUnit = document.getElementById('tau-unidades-s2').value;
+
+                // 3. Obtener Coordenadas
+                const vecN = getCoordinates('n'); // [h k l] - Normal
+                const vecB = getCoordinates('b'); // [u v w] - Burgers
+                const vecF = getCoordinates('F'); // [U V W] - Fuerza
+
+                // 4. Magnitudes
+                const sumN = calculateSquareSum(vecN);
+                const sumB = calculateSquareSum(vecB);
+                const sumF = calculateSquareSum(vecF);
+                
+                const magN = Math.sqrt(sumN); 
+                const magB = Math.sqrt(sumB); 
+                const magF = Math.sqrt(sumF); 
+
+                // Validación de coordenadas nulas
+                if (magN === 0) throw new Error("Las coordenadas del Plano Normal [h k l] no pueden ser todas cero.");
+                if (magB === 0) throw new Error("Las coordenadas de la Dirección de Deslizamiento [u v w] no pueden ser todas cero.");
+                if (magF === 0) throw new Error("Las coordenadas de la Fuerza Aplicada [U V W] no pueden ser todas cero.");
+                
+                // 5. Calcular Productos Punto (Numerador)
+                const prodPuntoFB = calculateDotProduct(vecF, vecB);
+                const prodPuntoNF = calculateDotProduct(vecN, vecF); 
+
+                // 6. Calcular Cosinos (Factores de Proyección)
+                const cosLambda = prodPuntoFB / (magF * magB);
+                const cosTheta = prodPuntoNF / (magN * magF); 
+
+                // 7. Validación de rango 
+                const cosLimit = 1.00000001;
+                if (Math.abs(cosTheta) > cosLimit || Math.abs(cosLambda) > cosLimit) {
+                    throw new Error("El valor absoluto de cos(λ) o cos(θ) es > 1. Revise sus índices cristalográficos.");
+                }
+                
+                // 8. Calcular Ángulos
+                const thetaRad = Math.acos(Math.min(1, Math.max(-1, cosTheta))); 
+                const lambdaRad = Math.acos(Math.min(1, Math.max(-1, cosLambda))); 
+                
+                const thetaDeg = thetaRad * (180 / Math.PI);
+                const lambdaDeg = lambdaRad * (180 / Math.PI);
+
+                // 9. Calcular Factor de Schmid y Tau Final (usando los cosenos originales para precisión)
+                const factorSchmid = cosLambda * cosTheta;
+                let tauResueltoMPa = sigmaValue * factorSchmid; 
+                const tauFinal = fromMPa(tauResueltoMPa, tauResultUnit);
+
+                // 10. Mostrar resultados detallados
+                resultadoDiv.innerHTML = `
+                    <h4>Resultados de la Geometría y el Esfuerzo</h4>
+                    <strong>Ángulo λ (Dirección Deslizamiento - Fuerza):</strong> ${formatNumber(lambdaDeg)} °<br>
+                    <strong>Ángulo θ (Plano Normal - Fuerza):</strong> ${formatNumber(thetaDeg)} °<br>
+                    <br>
+                    <strong>Esfuerzo Cortante Resuelto (τ<sub>resuelto</sub>):</strong> ${formatNumber(tauFinal)} ${tauResultUnit}
+                `;
+
+            } catch (error) {
+                resultadoDiv.innerHTML = `<span style="color: red;">Error en el cálculo cristalográfico: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
